@@ -1,0 +1,1 @@
+Aplicativo voltado para controle de gastos
