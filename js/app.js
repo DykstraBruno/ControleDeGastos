@@ -1,11 +1,14 @@
+import { Categoria } from './classes.js';
+
 const matrizGastos = [
-    ['Alimentação', 0],
-    ['Transporte', 0],
-    ['Moradia', 0],
-    ['Lazer', 0],
-    ['Outros', 0],
-    ['Total', 0],
+    new Categoria('Alimentação'),
+    new Categoria('Transporte'),
+    new Categoria('Moradia'),
+    new Categoria('Lazer'),
+    new Categoria('Outros'),
 ]
+
+
 //Funções utilitárias
 const obterElemento = (id) => document.getElementById(id);
 const valorNegativo = (valor) => valor < 0 ;

@@ -17,3 +17,9 @@ export class Categoria {
         this.#valor += parseFloat(valor);
     }
 }
+
+export class ListaGastosCategorias {
+    #categorias;
+    constructor(...categorias){
+        this.#categorias = categorias;
+    }
