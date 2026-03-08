@@ -23,3 +23,11 @@ export class ListaGastosCategorias {
     constructor(...categorias){
         this.#categorias = categorias;
     }
+    obterCategoria(nome){
+        return this.#categorias.find((categoria) => categoria.nome == nome);
+    }
+    obterTotal(){
+        return this.#categorias.reduce((total, categoria) => total + categoria.valor, 0);
+    }
+
+}
