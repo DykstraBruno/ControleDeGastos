@@ -1,30 +1,20 @@
-import { Categoria, ListaGastosCategorias } from './classes.js';
-import { valorNegativo, atualizarInterface } from './utils.js';
+//Funções utilitárias
+const obterElemento = (id) => document.getElementById(id);
+export const valorNegativo = (valor) => valor <= 0 || valor === '';
+const formatarMoeda = (valor) => valor.toFixed(2).replace('.', ',');
 
-const gastosPorCategoria = new ListaGastosCategorias(
-    new Categoria('Alimentação'),
-    new Categoria('Transporte'),
-    new Categoria('Moradia'),
-    new Categoria('Lazer'),
-    new Categoria('Outros'),
-);
+export const atualizarInterface = (gastosPorCategoria) => {
+    const categorias = gastosPorCategoria.categorias;
 
-const formulario = document.querySelector('form');
+    categorias.forEach(({nome, valor}) => {
+        const elemento = obterElemento(nome);
+        if (elemento) {
+            elemento.textContent = `${nome}: R$${formatarMoeda(valor)}`;
+        }
+    });
 
-formulario.addEventListener('submit', (evento) => {
-    evento.preventDefault();
-
-    const valorInformado = formulario.elements.valor.value;
-    const categoriaInformada = formulario.elements.categoria.value;
-
-    if (valorNegativo(valorInformado)) {
-        alert("Por favor, insira um valor válido para o gasto.");
-        return;
+    const elementoTotal = obterElemento('Total');
+    if (elementoTotal) {
+        elementoTotal.textContent = `Total: R$${formatarMoeda(gastosPorCategoria.obterTotal())}`;
     }
-
-    const categoria = gastosPorCategoria.obterCategoria(categoriaInformada);
-    categoria.adicionarValor(valorInformado);
-
-    atualizarInterface(gastosPorCategoria);
-    formulario.reset();
-});
+};
