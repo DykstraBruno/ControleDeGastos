@@ -4,14 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Gastos</title>
-    <link rel="stylesheet" href="estilo.css">
-    <script src="script.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            padding: 8px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover { background-color: #45a049; }
+        p { font-size: 1rem; margin: 6px 0; }
+        #Total {
+            font-weight: bold;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+    </style>
 </head>
 <body>
     <main>
         <h1>Controle de Gastos</h1>
-        <form>
-            <input type="number" name="valor" placeholder="Digite o valor do gasto"/>
+        <form id="formulario">
+            <input type="number" name="valor" placeholder="Digite o valor do gasto" min="0.01" step="0.01"/>
             <select name="categoria">
                 <option>Alimentação</option>
                 <option>Transporte</option>
@@ -25,9 +56,62 @@
         <p id="Transporte">Transporte: R$0,00</p>
         <p id="Moradia">Moradia: R$0,00</p>
         <p id="Lazer">Lazer: R$0,00</p>
+        <p id="Outros">Outros: R$0,00</p>
         <p id="Total">Total: R$0,00</p>
     </main>
 
-    <script type="module" src="js/app.js"></script>
+    <script>
+        class Categoria {
+            #nome; #valor;
+            constructor(nome) { this.#nome = nome; this.#valor = 0; }
+            get valor() { return this.#valor; }
+            get nome() { return this.#nome; }
+            adicionarValor(valor) { this.#valor += parseFloat(valor); }
+        }
+
+        class ListaGastosCategorias {
+            #categorias;
+            constructor(...categorias) { this.#categorias = categorias; }
+            get categorias() { return this.#categorias; }
+            obterCategoria(nome) { return this.#categorias.find(c => c.nome === nome); }
+            obterTotal() { return this.#categorias.reduce((total, c) => total + c.valor, 0); }
+        }
+
+        const obterElemento = (id) => document.getElementById(id);
+        const valorInvalido = (valor) => !valor || parseFloat(valor) <= 0;
+        const formatarMoeda = (valor) => valor.toFixed(2).replace('.', ',');
+
+        const atualizarInterface = (gastosPorCategoria) => {
+            gastosPorCategoria.categorias.forEach(({ nome, valor }) => {
+                const elemento = obterElemento(nome);
+                if (elemento) elemento.textContent = `${nome}: R$${formatarMoeda(valor)}`;
+            });
+            const elementoTotal = obterElemento('Total');
+            if (elementoTotal) elementoTotal.textContent = `Total: R$${formatarMoeda(gastosPorCategoria.obterTotal())}`;
+        };
+
+        const gastosPorCategoria = new ListaGastosCategorias(
+            new Categoria('Alimentação'),
+            new Categoria('Transporte'),
+            new Categoria('Moradia'),
+            new Categoria('Lazer'),
+            new Categoria('Outros'),
+        );
+
+        document.getElementById('formulario').addEventListener('submit', (evento) => {
+            evento.preventDefault();
+            const valorInformado = evento.target.elements.valor.value;
+            const categoriaInformada = evento.target.elements.categoria.value;
+
+            if (valorInvalido(valorInformado)) {
+                alert("Por favor, insira um valor válido para o gasto.");
+                return;
+            }
+
+            gastosPorCategoria.obterCategoria(categoriaInformada).adicionarValor(valorInformado);
+            atualizarInterface(gastosPorCategoria);
+            evento.target.reset();
+        });
+    </script>
 </body>
 </html>
