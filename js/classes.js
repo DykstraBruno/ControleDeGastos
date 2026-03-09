@@ -23,6 +23,9 @@ export class ListaGastosCategorias {
     constructor(...categorias){
         this.#categorias = categorias;
     }
+    get categorias(){
+        return this.#categorias;
+    }
     obterCategoria(nome){
         return this.#categorias.find((categoria) => categoria.nome == nome);
     }

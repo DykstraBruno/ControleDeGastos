@@ -1,39 +1,33 @@
-import { Categoria } from './classes.js';
+import { Categoria, ListaGastosCategorias } from './classes.js';
+import { valorNegativo, atualizarInterface } from './utils.js';
 
-const matrizGastos = [
+const gastosPorCategoria = new ListaGastosCategorias(
     new Categoria('Alimentação'),
     new Categoria('Transporte'),
     new Categoria('Moradia'),
     new Categoria('Lazer'),
     new Categoria('Outros'),
-]
+)
+const formulario = document.querySelector('form');
+
+formulario.addEventListener('submit', (evento) => {
+    evento.preventDefault();
+        const valorInformado = formulario.elements.valor.value;
+        const categoriaInformada = formulario.elements.categoria.value;
+
+    if (valorNegativo(valorInformado)) {
+        alert("Por favor, insira um valor válido para o gasto.");
+        return;
+    }
+
+    const categoria = gastosPorCategoria.obterCategoria(categoriaInformada);
+    categoria.adicionarValor(valorInformado);
 
 
-//Funções utilitárias
-const obterElemento = (id) => document.getElementById(id);
-const valorNegativo = (valor) => valor < 0 ;
-const somaValor =(total, valor) => total + valor;
-const limparCampos = () => obterElemento('valor').value = '';
-const formatarMoeda = (valor) => valor.toFixed(2).replace('.', ',');
+    atualizarInterface(gastosPorCategoria);
+    formulario.reset();
+});
 
-// Obter valores do formulário
-const obterValorInformado = () => parseFloat(obterElemento('valor').value);
-const obterCategoriaInformada = () => obterElemento('categoria').value;
-
-// Obter categoria da matriz
-const obterCategoria = (matriz, nomeCategoria) => matriz.find((item) => item[0] === nomeCategoria);
-
-// Atualizar valores da matroz
-const atualizarValorCategoria = (categoria, valor) => categoria[1] = somaValor(categoria[1], valor);
-
-const atualizarInterface = () =>{
-
-    matrizGastos.forEach(([nome, valor]) => {
-        const elemento = obterElemento(nome);
-        elemento.textContent = `${nome}: R$${formatarMoeda(valor)}`;
-    });
-
-}
 
 function adicionarGasto() {
 
